@@ -1,14 +1,14 @@
 === Soptis Editor ===
-Provides custom WordPress blocks that simplify website creation and improve layout flexibility.
-Contributors: d4rkbl00d
-Donate link: https://example.com/
+Contributors: DBDeve
 Tags: seo, meta, description, optimization
 Requires at least: 6.0
-Tested up to: 7.0
+Tested up to: 7.1
 Requires PHP: 7.4
 Stable tag: 1.0.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
+
+Provides custom WordPress blocks that simplify website creation and improve layout flexibility.
 
 == Description ==
 This plugin provides a set of custom WordPress blocks designed to simplify website creation. It offers structured, flexible components that can be used within the block editor to build pages more efficiently.
