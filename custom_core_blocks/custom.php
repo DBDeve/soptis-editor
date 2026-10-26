@@ -1,10 +1,11 @@
 <?php
 
+    if ( ! defined( 'ABSPATH' ) ) exit;
 
     /**
      * 1. Abilita l'interfaccia di spaziatura a livello di tema usando l'API ufficiale di WordPress
     */
-    function mio_plugin_forza_impostazioni_spaziatura( $theme_json ) {
+    function soptis_editor_impostazioni_spaziatura( $theme_json ) {
         
         // Configurazione valida secondo le specifiche del file theme.json
         $nuove_impostazioni = array(
@@ -28,9 +29,9 @@
         // Usa il metodo nativo corretto 'update_with' per fondere i dati
         return $theme_json->update_with( $nuove_impostazioni );
     }
-    add_filter( 'wp_theme_json_data_theme', 'mio_plugin_forza_impostazioni_spaziatura' );
+    add_filter( 'wp_theme_json_data_theme', 'soptis_editor_impostazioni_spaziatura' );
 
-    function mio_plugin_aggiungi_supporto_spaziature( $settings, $metadata ) {
+    function soptis_editor_aggiungi_supporto_spaziature( $settings, $metadata ) {
     
         // I blocchi nativi a cui vuoi assegnare i controlli
         $blocchi_da_modificare = array(
@@ -102,7 +103,7 @@
 
         return $settings;
     }
-    add_filter( 'block_type_metadata_settings', 'mio_plugin_aggiungi_supporto_spaziature', 10, 2 );
+    add_filter( 'block_type_metadata_settings', 'soptis_editor_aggiungi_supporto_spaziature', 10, 2 );
 
 
 ?>
