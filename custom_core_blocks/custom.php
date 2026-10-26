@@ -1,98 +1,108 @@
 <?php
 
-    if ( ! defined( 'ABSPATH' ) ) exit;
 
-    //applica le classi solo ai blocchi selezionati
-    add_filter('render_block', function($block_content, $block) {
+    /**
+     * 1. Abilita l'interfaccia di spaziatura a livello di tema usando l'API ufficiale di WordPress
+    */
+    function mio_plugin_forza_impostazioni_spaziatura( $theme_json ) {
+        
+        // Configurazione valida secondo le specifiche del file theme.json
+        $nuove_impostazioni = array(
+            'version'  => 3,
+            'settings' => array(
+                'spacing' => array(
+                    'margin'        => true,
+                    'padding'       => true,
+                    'customMargin'  => true,
+                    'customPadding' => true,
+                ),
+                'border' => array(
+                    'color'  => true,
+                    'radius' => true,
+                    'style'  => true,
+                    'width'  => true,
+                ),
+            ),
+        );
 
-        // Lista dei blocchi "design"
-        $design_blocks = [
+        // Usa il metodo nativo corretto 'update_with' per fondere i dati
+        return $theme_json->update_with( $nuove_impostazioni );
+    }
+    add_filter( 'wp_theme_json_data_theme', 'mio_plugin_forza_impostazioni_spaziatura' );
+
+    function mio_plugin_aggiungi_supporto_spaziature( $settings, $metadata ) {
+    
+        // I blocchi nativi a cui vuoi assegnare i controlli
+        $blocchi_da_modificare = array(
+            // --- Layout e Contenitori ---
             'core/group',
             'core/columns',
             'core/column',
             'core/cover',
             'core/media-text',
-            'core/row',
-            'core/stack',
-            'core/grid',
+
+            // --- Elementi di Testo e Tipografia ---
             'core/paragraph',
-            'core/title'
-        ];
+            'core/heading',
+            'core/list',
+            'core/table',
+            'core/quote',
+            'core/pullquote',
+            'core/code',
+            'core/preformatted',
+            'core/verse',
+            'core/details',
 
-        // Se il blocco è nella lista, aggiungi le classi
-        if (in_array($block['blockName'], $design_blocks, true)) {
+            // --- Pulsanti e Navigazione ---
+            'core/buttons',
+            'core/button',
+            'core/navigation',
 
-            $block_content = preg_replace(
-                '/class="/',
-                'class="block-margin block-padding block-border ',
-                $block_content,
-                1
+            // --- Elementi Media ---
+            'core/image',
+            'core/gallery',
+            'core/avatar',
+
+            // --- Blocchi del Tema e Query Loop ---
+            'core/site-title',
+            'core/site-logo',
+            'core/site-tagline',
+            'core/query',
+            'core/post-title',
+            'core/post-content',
+            'core/post-excerpt',
+            'core/post-featured-image',
+            'core/post-date',
+            'core/post-author',
+            'core/post-terms',
+            'core/comments'
+        );
+
+
+        if ( in_array( $metadata['name'], $blocchi_da_modificare, true ) ) {
+            if ( ! isset( $settings['supports'] ) ) {
+                $settings['supports'] = array();
+            }
+            if ( ! isset( $settings['supports']['spacing'] ) ) {
+                $settings['supports']['spacing'] = array();
+            }
+
+            $settings['supports']['spacing']['margin']  = true;
+            $settings['supports']['spacing']['padding'] = true;
+
+            // 3. AGGIUNGI QUESTO: Attiva il supporto ai bordi per il blocco
+            $settings['supports']['border'] = array(
+                'color'  => true,
+                'radius' => true,
+                'style'  => true,
+                'width'  => true,
             );
+
         }
 
-        return $block_content;
-
-    }, 10, 2);
-
-
-
-
-    add_action( 'wp_enqueue_scripts', function() {
-
-        wp_enqueue_style(
-            'core-blocks-style',
-            plugin_dir_url(__FILE__) . 'css/block.css',
-            [],
-            filemtime( plugin_dir_path(__FILE__) . 'css/block.css' )
-        );
-        
-    });
-
-
-
-    add_action('enqueue_block_editor_assets', function() {
-        
-        wp_enqueue_script(
-            'block-margin-control',
-            plugin_dir_url(__FILE__)  . 'js/block-margin-control.js',
-            ['wp-blocks', 'wp-dom-ready', 'wp-edit-post', 'wp-components', 'wp-element', 'wp-hooks', 'wp-block-editor'],
-            filemtime( plugin_dir_path( __FILE__ ) . 'js/block-margin-control.js' ),
-            array( 'in_footer' => true )
-        );
-
-        wp_enqueue_script(
-            'block-border-control',
-            plugin_dir_url(__FILE__)  . 'js/block-border-control.js',
-            ['wp-blocks', 'wp-dom-ready', 'wp-edit-post', 'wp-components', 'wp-element', 'wp-hooks', 'wp-block-editor'],
-            filemtime( plugin_dir_path( __FILE__ ) . 'js/block-border-control.js' ),
-            array( 'in_footer' => true )
-        );
-
-        wp_enqueue_script(
-            'block-padding-control',
-            plugin_dir_url(__FILE__)  . 'js/block-padding-control.js',
-            ['wp-blocks', 'wp-dom-ready', 'wp-edit-post', 'wp-components', 'wp-element', 'wp-hooks', 'wp-block-editor'],
-            filemtime( plugin_dir_path( __FILE__ ) . 'js/block-padding-control.js' ),
-            array( 'in_footer' => true )
-        );
-
-        wp_enqueue_script(
-            'image',
-            plugin_dir_url(__FILE__)  . 'js/image.js',
-            ['wp-blocks', 'wp-dom-ready', 'wp-edit-post', 'wp-components', 'wp-element', 'wp-hooks', 'wp-block-editor'],
-            filemtime( plugin_dir_path( __FILE__ ) . 'js/image.js' ),
-            array( 'in_footer' => true )
-        );
-
-        wp_enqueue_script(
-            'cover-block-customize',
-            plugin_dir_url(__FILE__)  . 'js/cover-block-customize.js',
-            ['wp-blocks', 'wp-dom-ready', 'wp-edit-post', 'wp-components', 'wp-element', 'wp-hooks', 'wp-block-editor'],
-            filemtime( plugin_dir_path( __FILE__ ) . 'js/cover-block-customize.js' ),
-            array( 'in_footer' => true )
-        );
-
-    });
+        return $settings;
+    }
+    add_filter( 'block_type_metadata_settings', 'mio_plugin_aggiungi_supporto_spaziature', 10, 2 );
 
 
 ?>
